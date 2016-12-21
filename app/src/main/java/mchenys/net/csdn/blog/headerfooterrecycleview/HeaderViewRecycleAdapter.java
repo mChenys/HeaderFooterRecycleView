@@ -11,7 +11,7 @@ import java.util.ArrayList;
  * 仿HeaderViewListAdapter 包装RecyclerView.Adapter,实现添加header和footer
  * Created by mChenys on 2016/12/21.
  */
-public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements WrapperRecycleAdapter {
+public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
     private static final String TAG = "HeaderView";
     private final RecyclerView.Adapter mAdapter;
     ArrayList<View> mHeaderViews;
@@ -143,10 +143,7 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
         return -1;
     }
 
-    @Override
-    public RecyclerView.Adapter getWrappedAdapter() {
-        return mAdapter;
-    }
+
 
     private static class HeaderViewHolder extends RecyclerView.ViewHolder {
         public HeaderViewHolder(View view) {

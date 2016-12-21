@@ -1,12 +1,11 @@
 package mchenys.net.csdn.blog.headerfooterrecycleview;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,18 +14,23 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-//https://gold.xitu.io/entry/576792651532bc0060320d05
-public class MainActivity extends AppCompatActivity {
-    private WrapperRecyclerView mRecycleView;
+/**
+ * Created by mChenys on 2016/12/21.
+ */
+public class RefreshRecycleViewActivity extends AppCompatActivity {
+    private RefreshRecycleView mRecycleView;
     private List<String> mData = new ArrayList<>();
-
+    private MyAdapter mAdapter;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        mRecycleView = new RefreshRecycleView(this);
+        setContentView(mRecycleView);
         initData();
         initView();
+        initListener();
     }
+
 
     private void initData() {
         for (int i = 'a'; i <= 'z'; i++) {
@@ -35,26 +39,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initView() {
-        mRecycleView = (WrapperRecyclerView) findViewById(R.id.wrc);
         mRecycleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         mRecycleView.setItemAnimator(new DefaultItemAnimator());
         mRecycleView.addItemDecoration(new MyItemDecoration());
-        View header1 = View.inflate(this, R.layout.layout_header1, null);
-        View header2 = View.inflate(this, R.layout.layout_header2, null);
-        View footer1 = View.inflate(this, R.layout.layout_footer1, null);
-        View footer2 = View.inflate(this, R.layout.layout_footer2, null);
-        mRecycleView.addHeaderView(header1);
-        mRecycleView.addHeaderView(header2);
-        mRecycleView.addFooterView(footer1);
-        mRecycleView.addFooterView(footer2);
-
+        mAdapter = new MyAdapter();
         mRecycleView.setAdapter(mAdapter);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     }
 
-    //RecyclerView Adapter
-    private RecyclerView.Adapter mAdapter = new RecyclerView.Adapter<MyViewHolder>() {
+    private void initListener() {
+        mRecycleView.setOnRefreshListener(new RefreshRecycleView.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                mData.clear();
+                for (int i = 1; i <= 26; i++) {
+                    mData.add("new Data-" + (i + 1));
+                }
+                mAdapter.resetData(mData);
+                mRecycleView.setRefreshComplete();
+            }
 
+            @Override
+            public void onLoadMore() {
+                for (int i = 1; i <= 26; i++) {
+                    mData.add("load Data-" + (i + 1));
+                }
+                mAdapter.notifyDataSetChanged();
+                mRecycleView.setLoadMoreComplete();
+            }
+        });
+    }
 
+    class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             return new MyViewHolder(getLayoutInflater().inflate(R.layout.item_layout, parent, false));
@@ -69,7 +85,12 @@ public class MainActivity extends AppCompatActivity {
         public int getItemCount() {
             return mData.size();
         }
-    };
+
+        public void resetData(List<String> data) {
+            mData = data;
+            notifyDataSetChanged();
+        }
+    }
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv;
@@ -81,16 +102,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        menu.add(0, 0, 0, "RefreshRecycleViewActivity");
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
         return true;
     }
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() ==0) {
-            startActivity(new Intent(this,RefreshRecycleViewActivity.class));
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+
 }
