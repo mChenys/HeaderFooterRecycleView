@@ -15,7 +15,9 @@ import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
 
-//https://gold.xitu.io/entry/576792651532bc0060320d05
+import mchenys.net.csdn.blog.headerfooterrecycleview.refreshview.MyItemDecoration;
+import mchenys.net.csdn.blog.headerfooterrecycleview.refreshview.WrapperRecyclerView;
+
 public class MainActivity extends AppCompatActivity {
     private WrapperRecyclerView mRecycleView;
     private List<String> mData = new ArrayList<>();
@@ -83,12 +85,16 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         menu.add(0, 0, 0, "RefreshRecycleViewActivity");
+        menu.add(0, 1, 1, "NormalRecycleViewActivity");
         return true;
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() ==0) {
             startActivity(new Intent(this,RefreshRecycleViewActivity.class));
+            return true;
+        }else if (item.getItemId() ==1) {
+            startActivity(new Intent(this,NormalRecycleViewActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

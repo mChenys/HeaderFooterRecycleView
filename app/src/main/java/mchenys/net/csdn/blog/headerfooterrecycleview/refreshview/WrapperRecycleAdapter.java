@@ -1,4 +1,4 @@
-package mchenys.net.csdn.blog.headerfooterrecycleview;
+package mchenys.net.csdn.blog.headerfooterrecycleview.refreshview;
 
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,16 +11,16 @@ import java.util.ArrayList;
  * 仿HeaderViewListAdapter 包装RecyclerView.Adapter,实现添加header和footer
  * Created by mChenys on 2016/12/21.
  */
-public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
+public class WrapperRecycleAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static final String TAG = "HeaderView";
     private final RecyclerView.Adapter mAdapter;
     ArrayList<View> mHeaderViews;
     ArrayList<View> mFooterViews;
     static final ArrayList<View> EMPTY_INFO_LIST = new ArrayList<>();
 
-    public HeaderViewRecycleAdapter(ArrayList<View> headerViews,
-                                    ArrayList<View> footerViews,
-                                    RecyclerView.Adapter adapter) {
+    public WrapperRecycleAdapter(ArrayList<View> headerViews,
+                                 ArrayList<View> footerViews,
+                                 RecyclerView.Adapter adapter) {
         this.mAdapter = adapter;
         if (headerViews == null) {
             this.mHeaderViews = EMPTY_INFO_LIST;
@@ -66,8 +66,17 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
         return false;
     }
 
+    public boolean removeFooter(int index) {
+        if (mFooterViews.size() > 0) {
+            return mFooterViews.remove(index) != null;
+        }
+        return false;
+    }
+
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        Log.d(TAG, "onCreateViewHolder->viewType:" + viewType);
         // Header
         int numHeaders = getHeadersCount();
         if (viewType < numHeaders) {
@@ -76,7 +85,6 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
         // Adapter
         int adjPosition = viewType - numHeaders;
         int adapterCount = 0;
-        Log.d(TAG, "position" + viewType);
         if (mAdapter != null) {
             adapterCount = mAdapter.getItemCount();
             Log.d(TAG, "adapterCount" + adapterCount);
@@ -85,11 +93,15 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
             }
         }
         // Footer
+        if (getFootersCount() < 0) return null;
         return new HeaderViewHolder(mFooterViews.get(adjPosition - adapterCount));
+
+
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        Log.d(TAG, "onBindViewHolder->position:" + position);
         int numHeaders = getHeadersCount();
         if (position >= numHeaders) {
             int adjPosition = position - numHeaders;
@@ -97,6 +109,7 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
             if (mAdapter != null) {
                 adapterCount = mAdapter.getItemCount();
                 if (adjPosition < adapterCount) {
+                    Log.d(TAG, "onBindViewHolder->显示普通View adjPosition:" + adjPosition + " adapterCount:" + adapterCount);
                     mAdapter.onBindViewHolder(holder, adjPosition);
                 }
             }
@@ -114,6 +127,8 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
 
     @Override
     public int getItemViewType(int position) {
+        Log.d(TAG, "getItemViewType->position:" + position);
+
         int numHeaders = getHeadersCount();
         if (position > numHeaders) {
             int adjPosition = position - numHeaders;
@@ -128,6 +143,8 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
             }
         }
         return position;
+
+
     }
 
     @Override
@@ -142,7 +159,6 @@ public class HeaderViewRecycleAdapter extends RecyclerView.Adapter<RecyclerView.
         }
         return -1;
     }
-
 
 
     private static class HeaderViewHolder extends RecyclerView.ViewHolder {

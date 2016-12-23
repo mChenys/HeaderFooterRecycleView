@@ -1,4 +1,4 @@
-package mchenys.net.csdn.blog.headerfooterrecycleview;
+package mchenys.net.csdn.blog.headerfooterrecycleview.refreshview;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
@@ -15,7 +15,7 @@ public class WrapperRecyclerView extends RecyclerView {
     private ArrayList<View> mHeaderViews = new ArrayList<>();
 
     private ArrayList<View> mFooterViews = new ArrayList<>();
-    private Adapter mAdapter;
+    private Adapter mWrapperAdapter;
 
 
     public WrapperRecyclerView(Context context) {
@@ -32,45 +32,50 @@ public class WrapperRecyclerView extends RecyclerView {
 
     public void addHeaderView(View view) {
         mHeaderViews.add(view);
-        if (mAdapter != null) {
-            if (!(mAdapter instanceof HeaderViewRecycleAdapter)) {
-                mAdapter = new HeaderViewRecycleAdapter(mHeaderViews, mFooterViews, mAdapter);
+        if (mWrapperAdapter != null) {
+            if (!(mWrapperAdapter instanceof WrapperRecycleAdapter)) {
+                mWrapperAdapter = new WrapperRecycleAdapter(mHeaderViews, mFooterViews, mWrapperAdapter);
             }
         }
     }
 
     public void addFooterView(View view) {
         mFooterViews.add(view);
-        if (mAdapter != null) {
-            if (!(mAdapter instanceof HeaderViewRecycleAdapter)) {
-                mAdapter = new HeaderViewRecycleAdapter(mHeaderViews, mFooterViews, mAdapter);
+        if (mWrapperAdapter != null) {
+            if (!(mWrapperAdapter instanceof WrapperRecycleAdapter)) {
+                mWrapperAdapter = new WrapperRecycleAdapter(mHeaderViews, mFooterViews, mWrapperAdapter);
             }
         }
     }
 
     public boolean removeHeaderView(View v) {
         if (mHeaderViews.size() > 0) {
-            return mAdapter != null && ((HeaderViewRecycleAdapter) mAdapter).removeHeader(v);
+            return mWrapperAdapter != null && ((WrapperRecycleAdapter) mWrapperAdapter).removeHeader(v);
         }
         return false;
     }
 
     public boolean removeFooterView(View v) {
         if (mFooterViews.size() > 0) {
-            return mAdapter != null && ((HeaderViewRecycleAdapter) mAdapter).removeFooter(v);
+            return mWrapperAdapter != null && ((WrapperRecycleAdapter) mWrapperAdapter).removeFooter(v);
         }
         return false;
     }
-
+    public boolean removeFooterView(int index) {
+        if (mFooterViews.size() > 0) {
+            return mWrapperAdapter != null && ((WrapperRecycleAdapter) mWrapperAdapter).removeFooter(index);
+        }
+        return false;
+    }
     @Override
     public void setAdapter(Adapter adapter) {
         if (mHeaderViews.isEmpty() && mHeaderViews.isEmpty()) {
             super.setAdapter(adapter);
         } else {
-            adapter = new HeaderViewRecycleAdapter(mHeaderViews, mFooterViews, adapter);
+            adapter = new WrapperRecycleAdapter(mHeaderViews, mFooterViews, adapter);
             super.setAdapter(adapter);
         }
-        mAdapter = adapter;
+        mWrapperAdapter = adapter;
     }
 
 }

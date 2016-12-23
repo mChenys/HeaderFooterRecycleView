@@ -1,4 +1,4 @@
-package mchenys.net.csdn.blog.headerfooterrecycleview;
+package mchenys.net.csdn.blog.headerfooterrecycleview.refreshview;
 
 import android.graphics.Canvas;
 import android.graphics.Color;

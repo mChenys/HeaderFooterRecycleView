@@ -4,6 +4,7 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/HeaderFooterRecycleView.iml" filepath="$PROJECT_DIR$/HeaderFooterRecycleView.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/cys_header_footer_recycleview.iml" filepath="$PROJECT_DIR$/cys_header_footer_recycleview.iml" />
     </modules>
   </component>
 </project>

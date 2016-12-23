@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,26 +16,32 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mchenys.net.csdn.blog.headerfooterrecycleview.refreshview.MyItemDecoration;
-import mchenys.net.csdn.blog.headerfooterrecycleview.refreshview.RefreshRecycleView;
 
 /**
- * Created by mChenys on 2016/12/21.
+ * Created by mChenys on 2016/12/22.
  */
-public class RefreshRecycleViewActivity extends AppCompatActivity {
-    private RefreshRecycleView mRecycleView;
+public class NormalRecycleViewActivity extends AppCompatActivity {
+    private static final String TAG = "Normal";
     private List<String> mData = new ArrayList<>();
-    private MyAdapter mAdapter;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mRecycleView = new RefreshRecycleView(this);
-        setContentView(mRecycleView);
+        setContentView(R.layout.activity_normal);
         initData();
         initView();
-        initListener();
+
     }
 
+    private void initView() {
+        recyclerView = (RecyclerView) findViewById(R.id.rv);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recyclerView.setItemAnimator(new DefaultItemAnimator());
+        recyclerView.addItemDecoration(new MyItemDecoration());
+        recyclerView.setAdapter(mAdapter);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    }
 
     private void initData() {
         for (int i = 'a'; i <= 'z'; i++) {
@@ -42,47 +49,19 @@ public class RefreshRecycleViewActivity extends AppCompatActivity {
         }
     }
 
-    private void initView() {
-        mRecycleView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        mRecycleView.setItemAnimator(new DefaultItemAnimator());
-        mRecycleView.addItemDecoration(new MyItemDecoration());
-        mAdapter = new MyAdapter();
-        mRecycleView.setAdapter(mAdapter);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
+    //RecyclerView Adapter
+    private RecyclerView.Adapter mAdapter = new RecyclerView.Adapter<MyViewHolder>() {
 
-    private void initListener() {
-        mRecycleView.setOnRefreshListener(new RefreshRecycleView.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                mData.clear();
-                for (int i = 1; i <= 26; i++) {
-                    mData.add("new Data-" + (i + 1));
-                }
-                mRecycleView.notifyDataRefresh();
-                mRecycleView.setRefreshComplete();
-            }
 
-            @Override
-            public void onLoadMore() {
-                //加载更多底部显示有问题
-                mRecycleView.setLoadMoreComplete();
-                for (int i = 0; i <= 26; i++) {
-                    mData.add("load Data-" + (i + 1));
-                }
-                mRecycleView.notifyDataLoaded();
-            }
-        });
-    }
-
-    class MyAdapter extends RecyclerView.Adapter<MyViewHolder> {
         @Override
         public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            Log.d(TAG, "onCreateViewHolder->viewType:" + viewType);
             return new MyViewHolder(getLayoutInflater().inflate(R.layout.item_layout, parent, false));
         }
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
+            Log.d(TAG, "onBindViewHolder->position:" + position);
             holder.tv.setText(mData.get(position));
         }
 
@@ -91,7 +70,12 @@ public class RefreshRecycleViewActivity extends AppCompatActivity {
             return mData.size();
         }
 
-    }
+        @Override
+        public int getItemViewType(int position) {
+            Log.d(TAG, "getItemViewType->position:" + position);
+            return super.getItemViewType(position);
+        }
+    };
 
     class MyViewHolder extends RecyclerView.ViewHolder {
         public TextView tv;
@@ -101,13 +85,26 @@ public class RefreshRecycleViewActivity extends AppCompatActivity {
             tv = (TextView) itemView.findViewById(R.id.tv_info);
         }
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == android.R.id.home) {
             finish();
         }
         return true;
+    }
+
+    public void onRefresh(View view) {
+        mData.clear();
+        for (int i = 'a'; i <= 'z'; i++) {
+            mData.add("new"+String.valueOf((char) i));
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+    public void onAddMore(View view) {
+        for (int i = 'a'; i <= 'z'; i++) {
+            mData.add("load"+String.valueOf((char) i));
+        }
+        mAdapter.notifyDataSetChanged();
     }
 
 }
